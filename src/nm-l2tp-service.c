@@ -1219,10 +1219,9 @@ nm_l2tp_config_write (NML2tpPlugin *plugin,
 	write_config_option (ipsec_fd, "version 2.0\n"
 "config setup\n");
 	if (priv->is_libreswan) {
-	    write_config_option (ipsec_fd, 	"  nat_traversal=yes\n"
-						"  force_keepalive=yes\n"
+            write_config_option (ipsec_fd, 	"  nat-keepalive=yes\n"
 						"  protostack=netkey\n"
-						"  keep_alive=60\n"
+                                                "  keep-alive=60\n"
 						"\n");
 	}
 
@@ -1231,8 +1230,8 @@ nm_l2tp_config_write (NML2tpPlugin *plugin,
 						"  type=transport\n");
 
 	if (priv->is_libreswan) {
-		write_config_option (ipsec_fd, 	"  auth=esp\n"
-						"  pfs=no\n");
+		write_config_option (ipsec_fd, 	"  pfs=no\n"
+                                                "  aggrmode=no\n");
 	}
 
 	write_config_option (ipsec_fd, 		"  authby=secret\n"
@@ -1246,16 +1245,7 @@ nm_l2tp_config_write (NML2tpPlugin *plugin,
 	write_config_option (ipsec_fd, "  right=%s\n", priv->saddr);
 	value = nm_setting_vpn_get_data_item (s_vpn, NM_L2TP_KEY_IPSEC_GATEWAY_ID);
 	if(value)write_config_option (ipsec_fd, "  rightid=@%s\n", value);
-	write_config_option (ipsec_fd,		"  esp=3des-sha1\n"
-						"  ike=3des-sha1-modp1024\n"
-						"  forceencaps=yes\n");
-
-	if (priv->is_libreswan) {
-		write_config_option (ipsec_fd,	"  keyexchange=ike\n"
-						"  aggrmode=no\n");
-	} else {
-		write_config_option (ipsec_fd,	"  keyexchange=ikev1\n");
-	}
+	write_config_option (ipsec_fd,		"  forceencaps=yes\n");
 
 	filename = g_strdup_printf ("/var/run/nm-xl2tpd.conf.%d", pid);
 	conf_fd = open (filename, O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
